@@ -78,7 +78,7 @@ useragent='User-Agent: Starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiao
 
 printf "\e[1;77m[\e[0m\e[1;92m+\e[0m\e[1;77m] Trying to login as\e[0m\e[1;93m %s\e[0m\n" $user
 IFS=$'\n'
-var=$(curl -c cookie.$user -d "ig_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "Instagram 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://www.starmakerstudios.com/api/v1/accounts/login/" | grep -o "logged_in_user\|challenge\|many tries\|Please wait" | uniq ); 
+var=$(curl -c cookie.$user -d "ig_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "Starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://www.starmakerstudios.com/api/v1/accounts/login/" | grep -o "logged_in_user\|challenge\|many tries\|Please wait" | uniq ); 
 if [[ $var == "challenge" ]]; then printf "\e[1;93m\n[!] Challenge required\n" ; exit 1; elif [[ $var == "logged_in_user" ]]; then printf "\e[1;92m \n[+] Login Successful\n" ; elif [[ $var == "Please wait" ]]; then echo "Please wait"; fi; 
 
 fi
@@ -91,14 +91,14 @@ user_account=$user
 user_id=$(curl -L -s 'https://www.starmakerstudios.com/'$user_account'' > getid && grep -o  'profilePage_[0-9]*.' getid | cut -d "_" -f2 | tr -d '"')
 
 printf "\e[1;77m[\e[0m\e[1;92m+\e[0m\e[1;77m] Generating image list\n"
-curl -L -b cookie.$user -s --user-agent 'User-Agent: " starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://i.instagram.com/api/v1/feed/saved" > $user_account.saved_ig
+curl -L -b cookie.$user -s --user-agent 'User-Agent: " starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/feed/saved" > $user_account.saved_sm
 
 cp $user_account.saved_sm $user_account.saved_ig.00
 count=0
 
 while [[ true ]]; do
 big_list=$(grep -o '"more_available": true' $user_account.saved_ig)
-maxid=$(grep -o '"next_max_id": "[^ ]*.' $user_account.saved_ig | cut -d " " -f2 | tr -d '"' | tr -d ',')
+maxid=$(grep -o '"next_max_id": "[^ ]*.' $user_account.saved_sm | cut -d " " -f2 | tr -d '"' | tr -d ',')
 
 if [[ $big_list == *'"more_available": true'* ]]; then
 
@@ -164,7 +164,7 @@ get_following() {
 
 user_id=$(curl -L -s 'https://www.starmakerstudios.com/'$user_account'' > getid && grep -o  'profilePage_[0-9]*.' getid | cut -d "_" -f2 | tr -d '"')
 
-curl -L -b cookie.$user -s --user-agent 'User-Agent: "Instagram 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://i.instagram.com/api/v1/friendships/$user_id/following" > $user_account.following.temp
+curl -L -b cookie.$user -s --user-agent 'User-Agent: "Instagram 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/friendships/$user_id/following" > $user_account.following.temp
 
 
 cp $user_account.following.temp $user_account.following.00
@@ -176,7 +176,7 @@ maxid=$(grep -o '"next_max_id": "[^ ]*.' $user_account.following.temp | cut -d "
 
 if [[ $big_list == *'big_list": true'* ]]; then
 
-url="https://m.starmakerstudios.com/api/v1/friendships/6971563529/following/?rank_token=$user_id\_$guid&max_id=$maxid"
+url="m\_$guid&max_id=$maxid"
 
 curl -L -b cookie.$user -s --user-agent 'User-Agent: "Starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"'  -H "$header" "$url" > $user_account.followers.temp
 
@@ -220,7 +220,7 @@ printf "\e[1;31m[\e[0m\e[1;77m+\e[0m\e[1;31m]\e[0m\e[1;93m Please wait...\e[0m\n
 
 user_id=$(curl -L -s 'https://www.starmakerstudios.com/'$user_account'' > getid && grep -o  'profilePage_[0-9]*.' getid | cut -d "_" -f2 | tr -d '"')
 
-curl -L -b cookie.$user -s --user-agent 'User-Agent: "starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://i.instagram.com/api/v1/friendships/$user_id/followers/" > $user_account.followers.temp
+curl -L -b cookie.$user -s --user-agent 'User-Agent: "starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/friendships/$user_id/followers/" > $user_account.followers.temp
 
 cp $user_account.followers.temp $user_account.followers.00
 count=0
@@ -229,8 +229,7 @@ count=0
 while [[ true ]]; do
 big_list=$(grep -o '"big_list": true' $user_account.followers.temp)
 maxid=$(grep -o '"next_max_id": "[^ ]*.' $user_account.followers.temp | cut -d " " -f2 | tr -d '"' | tr -d ',')
-
-if [[ $big_list == *'big_list": true'* ]]; then
+hf [[ $big_list == *'big_list": true'* ]]; then
 
 url="https://m.starmakerstudios.com/api/v1/friendships/$user_id/followers/?rank_token=$user_id\_$guid&max_id=$maxid"
 
@@ -348,7 +347,7 @@ username_id=$(curl -L -s 'https://www.starmakerstudios.com/'$user'' > getid && g
 user_id=$(curl -L -s 'https://www.starmakerstudios.com/'$user_account'' > getid && grep -o  'profilePage_[0-9]*.' getid | cut -d "_" -f2 | tr -d '"')
 data='{"_uuid":"'$guid'", "_uid":"'$username_id'", "user_id":"'$user_id'", "_csrftoken":"'$var2'"}'
 hmac=$(echo -n "$data" | openssl dgst -sha256 -hmac "${ig_sig}" | cut -d " " -f2)
-curl -L -b cookie -d "ig_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "Instagram 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://i.instagram .com/api/v1/friendships/create/$user_id/" 
+curl -L -b cookie -d "ig_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/friendships/create/$user_id/" 
 
 
 }
@@ -477,7 +476,7 @@ for celeb in $(cat celeb_id); do
 data='{"_uuid":"'$guid'", "_uid":"'$username_id'", "user_id":"'$celeb'", "_csrftoken":"'$var2'"}'
 hmac=$(echo -n "$data" | openssl dgst -sha256 -hmac "${ig_sig}" | cut -d " " -f2)
 printf "\e[1;31m[\e[0m\e[1;77m+\e[0m\e[1;31m]\e[0m\e[1;93m Trying to unfollow celebgram %s ..." $celeb
-check_unfollow=$(curl -s -L -b cookie.$user -d "sm_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "Instagram 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/friendships/destroy/$celeb/" | grep -o '"following": false' ) 
+check_unfollow=$(curl -s -L -b cookie.$user -d "sm_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "Starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/friendships/destroy/$celeb/" | grep -o '"following": false' ) 
 
 if [[ $check_unfollow == "" ]]; then
 printf "\n\e[1;93m [!] Error, stoping to prevent blocking\n"
@@ -503,7 +502,7 @@ friendship() {
 
 data='{"_uuid":"'$guid'", "_uid":"'$username_id'", "user_id":"'$user_id'", "_csrftoken":"'$var2'"}'
 hmac=$(echo -n "$data" | openssl dgst -sha256 -hmac "${ig_sig}" | cut -d " " -f2)
-curl -L -b cookie.$user -d "ig_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "Instagram 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/friendships/show/$user_id/"
+curl -L -b cookie.$user -d "ig_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "Starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/friendships/show/$user_id/"
 
 }
 
@@ -577,7 +576,7 @@ user_id=$(curl -L -s 'https://www.starmakerstudios.com/'$user_account'' > getid 
 
 data='{"_uuid":"'$guid'", "_uid":"'$username_id'", "_csrftoken":"'$var2'"}'
 hmac=$(echo -n "$data" | openssl dgst -sha256 -hmac "${ig_sig}" | cut -d " " -f2)
-curl -L -b cookie.$user -d "ig_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "Instagram 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/users/$user_id/info" > $user_account/profile.info
+curl -L -b cookie.$user -d "ig_sig_key_version=4&signed_body=$hmac.$data" -s --user-agent 'User-Agent: "starmaker 10.26.0 Android (18/4.3; 320dpi; 720x1280; Xiaomi; HM 1SW; armani; qcom; en_US)"' -w "\n%{http_code}\n" -H "$header" "https://m.starmakerstudios.com/api/v1/users/$user_id/info" > $user_account/profile.info
 printf "\e[1;31m[\e[0m\e[1;77m+\e[0m\e[1;31m]\e[0m\e[1;77m %s\e[0m\e[1;93m account info:\e[0m\n" $user_account
 cat $user_account/profile.info
 grep -o 'https://[^ ]*.jpg[^\ ]*.' $user_account/profile.info | cut -d '"' -f1 | tr -d '\\' | uniq > $user_account/profile_pic
